@@ -15,11 +15,31 @@ df_test=pd.read_csv("test.csv")
 #siteid: 10%
 #browserid: 5.98%
 #devid: 19%
-#It will be better to remove these fields.
 #As every ad has a unique id,drop the id column.
 id_test=df_test.as_matrix(columns=["ID"]).ravel()
-df_train.drop(["ID","siteid","browserid","devid"],axis=1,inplace=True)
-df_test.drop(["ID","siteid","browserid","devid"],axis=1,inplace=True)
+df_train.drop(["ID"],axis=1,inplace=True)
+print("TRAINING DATA DESCRIPTION")
+print(df_train["siteid"].describe())
+print(df_train["browserid"].describe())
+print(df_train["devid"].describe())
+
+
+print("TESTING DATA DESCRIPTION")
+print(df_test["siteid"].describe())
+print(df_test["browserid"].describe())
+print(df_test["devid"].describe())
+
+# Filling NaN values
+df_train["siteid"].fillna(5023971,inplace=True)    #Filled the mean value
+df_train["browserid"].fillna("Edge",inplace=True)  # Filled the top value
+df_train["devid"].fillna("Mobile",inplace=True)    # Filled the top value     
+
+df_test["siteid"].fillna(5046957,inplace=True)      #Filled the mean value
+df_test["browserid"].fillna("Edge",inplace=True)    # Filled the top value
+df_test["devid"].fillna("Mobile",inplace=True)      # Filled the top value
+
+
+df_test.drop(["ID"],axis=1,inplace=True)
 #print(df_train.isnull().sum())
 #print(df_test.isnull().sum())
 labels_train=df_train.as_matrix(columns=["click"]).ravel()
@@ -30,6 +50,12 @@ from sklearn.preprocessing import LabelEncoder
 #le=LabelEncoder()
 df_train["countrycode"]=LabelEncoder().fit_transform(df_train["countrycode"])
 df_test["countrycode"]=LabelEncoder().fit_transform(df_test["countrycode"])
+
+df_train["browserid"]=LabelEncoder().fit_transform(df_train["browserid"])
+df_test["browserid"]=LabelEncoder().fit_transform(df_test["browserid"])
+
+df_train["devid"]=LabelEncoder().fit_transform(df_train["devid"])
+df_test["devid"]=LabelEncoder().fit_transform(df_test["devid"])
 
 ######################## TESTING PURPOSES ONLY ########################################
 #for i in range(len(features_train)):
@@ -48,16 +74,25 @@ df_test["countrycode"]=LabelEncoder().fit_transform(df_test["countrycode"])
 # day_of_week: 1: Sunday 2: Monday 3: Tuesday 4: Wed 5: Thurs 6: Fri 7: Sat
 
 datetime_tr=df_train.as_matrix(columns=["datetime"]).ravel()
+siteid_tr=df_train.as_matrix(columns=["siteid"]).ravel()
 offerid_tr=df_train.as_matrix(columns=["offerid"]).ravel()
 category_tr=df_train.as_matrix(columns=["category"]).ravel()
 merchant_tr=df_train.as_matrix(columns=["merchant"]).ravel()
 countrycode_tr=df_train.as_matrix(columns=["countrycode"]).ravel()
+browserid_tr=df_train.as_matrix(columns=["browserid"]).ravel()
+devid_tr=df_train.as_matrix(columns=["devid"]).ravel()
+
+
 
 datetime_te=df_test.as_matrix(columns=["datetime"]).ravel()
+siteid_te=df_test.as_matrix(columns=["siteid"]).ravel()
 offerid_te=df_test.as_matrix(columns=["offerid"]).ravel()
 category_te=df_test.as_matrix(columns=["category"]).ravel()
 merchant_te=df_test.as_matrix(columns=["merchant"]).ravel()
 countrycode_te=df_test.as_matrix(columns=["countrycode"]).ravel()
+browserid_te=df_test.as_matrix(columns=["browserid"]).ravel()
+devid_te=df_test.as_matrix(columns=["devid"]).ravel()
+
 
 abs_time_tr=[]
 day_of_week_tr=[]
@@ -108,14 +143,14 @@ for s in datetime_te:
 features_train=[]
 
 for i in range(len(offerid_tr)):
-    features_train.append([day_of_week_tr[i],abs_time_tr[i],offerid_tr[i],category_tr[i],merchant_tr[i],countrycode_tr[i]])
+    features_train.append([day_of_week_tr[i],abs_time_tr[i],siteid_tr[i],offerid_tr[i],category_tr[i],merchant_tr[i],countrycode_tr[i],browserid_tr[i],devid_tr[i]])
 
 features_train = np.asarray(features_train)
 
 features_test=[]
 
 for i in range(len(offerid_te)):
-    features_test.append([day_of_week_te[i],abs_time_te[i],offerid_te[i],category_te[i],merchant_te[i],countrycode_te[i]])
+    features_test.append([day_of_week_te[i],abs_time_te[i],siteid_te[i],offerid_te[i],category_te[i],merchant_te[i],countrycode_te[i],browserid_te[i],devid_te[i]])
 
 features_test = np.asarray(features_test)
 
@@ -129,7 +164,7 @@ features_test=scalar.fit_transform(features_test)
 print(features_train)
 print(features_test)
 
-# Score of 0.629
+
 def random_forest(f_train,l_train,f_test):
     from sklearn.ensemble import RandomForestClassifier
     #from sklearn.grid_search import GridSearchCV
@@ -148,8 +183,6 @@ def random_forest(f_train,l_train,f_test):
     print(pred)
     return pred
 
-
-#Score of 0.65157
 def gradient_boosting_classifier(f_train,l_train,f_test):
     from sklearn.ensemble import GradientBoostingClassifier as gbc
     clf=gbc()
@@ -161,6 +194,7 @@ def gradient_boosting_classifier(f_train,l_train,f_test):
     pred=clf.predict_proba(f_test)
     print("Predicting Time: %s seconds" %(time.time() - start_time))
     return pred
+
 
 def writer(pred,id_te):
     txt = []
