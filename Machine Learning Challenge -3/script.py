@@ -129,7 +129,7 @@ features_test=scalar.fit_transform(features_test)
 print(features_train)
 print(features_test)
 
-
+# Score of 0.629
 def random_forest(f_train,l_train,f_test):
     from sklearn.ensemble import RandomForestClassifier
     #from sklearn.grid_search import GridSearchCV
@@ -148,6 +148,20 @@ def random_forest(f_train,l_train,f_test):
     print(pred)
     return pred
 
+
+#Score of 0.65157
+def gradient_boosting_classifier(f_train,l_train,f_test):
+    from sklearn.ensemble import GradientBoostingClassifier as gbc
+    clf=gbc()
+    import time
+    start_time=time.time()
+    clf.fit(f_train,l_train)
+    print("Training Time: %s seconds"%(time.time() - start_time))
+    start_time=time.time()
+    pred=clf.predict_proba(f_test)
+    print("Predicting Time: %s seconds" %(time.time() - start_time))
+    return pred
+
 def writer(pred,id_te):
     txt = []
 
@@ -159,7 +173,7 @@ def writer(pred,id_te):
     df_result.to_csv(path_or_buf="output_classifier.csv", index=False)
 
 
-pred=random_forest(features_train,labels_train,features_test)
+pred=gradient_boosting_classifier(features_train,labels_train,features_test)
 writer(pred,id_test)
 
 
