@@ -32,7 +32,7 @@ print(df_test["devid"].describe())
 # Filling NaN values
 df_train["siteid"].fillna(5023971,inplace=True)    #Filled the mean value
 df_train["browserid"].fillna("Edge",inplace=True)  # Filled the top value
-df_train["devid"].fillna("Mobile",inplace=True)    # Filled the top value     
+df_train["devid"].fillna("Mobile",inplace=True)    # Filled the top value
 
 df_test["siteid"].fillna(5046957,inplace=True)      #Filled the mean value
 df_test["browserid"].fillna("Edge",inplace=True)    # Filled the top value
@@ -96,6 +96,10 @@ devid_te=df_test.as_matrix(columns=["devid"]).ravel()
 
 abs_time_tr=[]
 day_of_week_tr=[]
+# New Features
+hour_of_day_tr=[]
+minute_of_hour_tr=[]
+second_of_minute_tr=[]
 
 for s in datetime_tr:
     date,time=s.split()
@@ -116,9 +120,24 @@ for s in datetime_tr:
     elif date=="16" or date=="23":
         day_of_week_tr.append(2)
     abs_time_tr.append(int(time))
+    hr=time[:2]
+    minute=time[2:4]
+    second=time[4:]
+    hour_of_day_tr.append(int(hr))
+    minute_of_hour_tr.append(int(minute))
+    second_of_minute_tr.append(int(second))
+
+
+
+
 
 abs_time_te=[]
 day_of_week_te=[]
+hour_of_day_te=[]
+minute_of_hour_te=[]
+second_of_minute_te=[]
+
+
 
 for s in datetime_te:
     date,time=s.split()
@@ -139,18 +158,24 @@ for s in datetime_te:
     elif date=="16" or date=="23":
         day_of_week_te.append(2)
     abs_time_te.append(int(time))
+    hr = time[:2]
+    minute = time[2:4]
+    second = time[4:]
+    hour_of_day_te.append(int(hr))
+    minute_of_hour_te.append(int(minute))
+    second_of_minute_te.append(int(second))
 
 features_train=[]
 
 for i in range(len(offerid_tr)):
-    features_train.append([day_of_week_tr[i],abs_time_tr[i],siteid_tr[i],offerid_tr[i],category_tr[i],merchant_tr[i],countrycode_tr[i],browserid_tr[i],devid_tr[i]])
+    features_train.append([day_of_week_tr[i],hour_of_day_tr[i],minute_of_hour_tr[i],second_of_minute_tr[i],abs_time_tr[i],siteid_tr[i],offerid_tr[i],category_tr[i],merchant_tr[i],countrycode_tr[i],browserid_tr[i],devid_tr[i]])
 
 features_train = np.asarray(features_train)
 
 features_test=[]
 
 for i in range(len(offerid_te)):
-    features_test.append([day_of_week_te[i],abs_time_te[i],siteid_te[i],offerid_te[i],category_te[i],merchant_te[i],countrycode_te[i],browserid_te[i],devid_te[i]])
+    features_test.append([day_of_week_te[i],hour_of_day_te[i],minute_of_hour_te[i],second_of_minute_te[i],abs_time_te[i],siteid_te[i],offerid_te[i],category_te[i],merchant_te[i],countrycode_te[i],browserid_te[i],devid_te[i]])
 
 features_test = np.asarray(features_test)
 
