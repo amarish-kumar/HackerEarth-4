@@ -220,6 +220,13 @@ def gradient_boosting_classifier(f_train,l_train,f_test):
     print("Predicting Time: %s seconds" %(time.time() - start_time))
     return pred
 
+def xg_boost(f_train,l_train,f_test):
+    from xgboost import XGBClassifier as xgb
+    clf=xgb(n_estimators=100)
+    clf.fit(f_train,l_train)
+    pred=clf.predict_proba(f_test)
+    #print(pred)
+    return pred
 
 def writer(pred,id_te):
     txt = []
@@ -232,7 +239,7 @@ def writer(pred,id_te):
     df_result.to_csv(path_or_buf="output_classifier.csv", index=False)
 
 
-pred=gradient_boosting_classifier(features_train,labels_train,features_test)
+pred=xg_boost(features_train,labels_train,features_test)
 writer(pred,id_test)
 
 
