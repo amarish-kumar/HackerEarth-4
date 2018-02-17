@@ -1,8 +1,8 @@
 ## Machine Learning Challenge -3:  
 #### Team: _ML_Lovers_  
-Team Members: [Shyamal Vaderia][sv] (Leader) and [Apurv Bajaj][apb]  
+Team Members: [Shyamal Vaderia][sv] and [Apurv Bajaj][apb]  
 Problem: [Predict Ad Click][pac]  
-Dataset: Download from [here][data] 
+Dataset: [Download][data] 
 
 
 [sv]:https://www.hackerearth.com/@svaderia
